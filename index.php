@@ -1,0 +1,1 @@
+<?php require_once __DIR__.'/includes/bootstrap.php'; page('Home','<h2>Student Skill &amp; Internship Management System</h2><p>Register or log in to manage skills, internships and applications.</p>');

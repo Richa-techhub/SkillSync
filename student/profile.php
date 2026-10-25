@@ -1,0 +1,7 @@
+<?php
+require_once __DIR__.'/../includes/bootstrap.php';require_role('Student');$id=student_id($pdo);$err='';
+if($_SERVER['REQUEST_METHOD']==='POST'){verify_csrf();$name=val('name',150);$phone=val('phone',30);$dept=val('department',100);$yr=val('year',5);$cg=val('CGPA',10);$resume=val('resume',500);$year=$yr===''?null:filter_var($yr,FILTER_VALIDATE_INT,['options'=>['min_range'=>1,'max_range'=>8]]);$cgpa=$cg===''?null:(is_numeric($cg)?(float)$cg:-1);
+if($name===''||($yr!==''&&$year===false)||($cg!==''&&(!is_numeric($cg)||$cgpa<0||$cgpa>10)))$err='Check name, year (1–8) and CGPA (0–10).';else{$s=$pdo->prepare('UPDATE student SET name=?,phone=?,department=?,year=?,CGPA=?,resume=? WHERE student_id=?');$s->execute([$name,$phone?:null,$dept?:null,$year,$cgpa,$resume?:null,$id]);header('Location: profile.php?saved=1');exit;}}
+$s=$pdo->prepare('SELECT * FROM student WHERE student_id=?');$s->execute([$id]);$p=$s->fetch();$body=($err?'<p class="error">'.e($err).'</p>':'').(!empty($_GET['saved'])?'<p class="ok">Saved.</p>':'').'<form method="post"><input type="hidden" name="csrf_token" value="'.e(csrf_token()).'">';
+foreach(['name'=>'Name','phone'=>'Phone','department'=>'Department','year'=>'Year','CGPA'=>'CGPA','resume'=>'Resume path / URL'] as $key=>$label)$body.='<label>'.e($label).'<input name="'.e($key).'" value="'.e($p[$key]??'').'"></label>';
+$body.='<button>Save profile</button></form>';page('Student profile',$body);

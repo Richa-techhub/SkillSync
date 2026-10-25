@@ -1,0 +1,14 @@
+# Ignore frontend since it has its own dedicated repository
+skillsync-frontend/
+
+# Ignore local session cookie files
+*.txt
+!README.txt
+!README_PERSON3_FRONTEND.txt
+
+# Ignore docx backup
+SkillSync_Report_Revised_Backup.docx
+
+# OS metadata
+Thumbs.db
+.DS_Store

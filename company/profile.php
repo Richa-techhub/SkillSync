@@ -1,0 +1,5 @@
+<?php
+require_once __DIR__.'/../includes/bootstrap.php';require_role('Company');$id=company_id($pdo);$err='';
+if($_SERVER['REQUEST_METHOD']==='POST'){verify_csrf();$name=val('company_name',180);if(!$name)$err='Company name required.';else{$s=$pdo->prepare('UPDATE company SET company_name=?,phone=?,website=?,location=?,industry=? WHERE company_id=?');$s->execute([$name,val('phone',30)?:null,val('website',255)?:null,val('location',180)?:null,val('industry',100)?:null,$id]);header('Location: profile.php?saved=1');exit;}}
+$s=$pdo->prepare('SELECT * FROM company WHERE company_id=?');$s->execute([$id]);$p=$s->fetch();$b=($err?'<p class="error">'.e($err).'</p>':'').(!empty($_GET['saved'])?'<p class="ok">Saved.</p>':'').'<form method="post"><input type="hidden" name="csrf_token" value="'.e(csrf_token()).'">';
+foreach(['company_name'=>'Company name','phone'=>'Phone','website'=>'Website','location'=>'Location','industry'=>'Industry'] as $k=>$label)$b.='<label>'.e($label).'<input name="'.e($k).'" value="'.e($p[$k]??'').'"></label>';$b.='<button>Save</button></form>';page('Company profile',$b);
