@@ -1,5 +1,8 @@
-# Ignore frontend since it has its own dedicated repository
-skillsync-frontend/
+# Frontend build & dependencies
+skillsync-frontend/node_modules/
+skillsync-frontend/.next/
+skillsync-frontend/out/
+skillsync-frontend/build/
 
 # Ignore local session cookie files
 *.txt
