@@ -25,6 +25,7 @@ try {
             i.location,
             i.duration,
             i.stipend,
+            COALESCE(i.min_cgpa, 0.00) AS min_cgpa,
             i.start_date,
             i.deadline,
             i.status

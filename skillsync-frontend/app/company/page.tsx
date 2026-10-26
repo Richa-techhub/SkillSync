@@ -10,6 +10,7 @@ type CompanyInternship = {
   location: string;
   duration: string;
   stipend: string;
+  min_cgpa?: number | string;
   start_date: string;
   deadline: string;
   status: string;
@@ -25,6 +26,7 @@ type CompanyApplication = {
   student_email: string;
   internship_id: number;
   internship_title: string;
+  min_cgpa?: number | string;
   application_date: string;
   status: string;
   resume: string | null;
@@ -74,6 +76,9 @@ export default function CompanyDashboardPage() {
 
   const [activeTab, setActiveTab] = useState("All");
   const [search, setSearch] = useState("");
+  const [hideBelowCriteria, setHideBelowCriteria] = useState(false);
+  const [discarding, setDiscarding] = useState(false);
+  const [discardNotice, setDiscardNotice] = useState("");
 
   // Post Internship Modal State
   const [showModal, setShowModal] = useState(false);
@@ -82,6 +87,7 @@ export default function CompanyDashboardPage() {
   const [location, setLocation] = useState("Remote");
   const [duration, setDuration] = useState("3 months");
   const [stipend, setStipend] = useState("15000");
+  const [minCgpa, setMinCgpa] = useState("8.50");
   const [startDate, setStartDate] = useState("");
   const [deadline, setDeadline] = useState("");
   const [modalLoading, setModalLoading] = useState(false);
@@ -165,6 +171,7 @@ export default function CompanyDashboardPage() {
           location: location.trim(),
           duration: duration.trim(),
           stipend: stipend.trim(),
+          min_cgpa: minCgpa ? parseFloat(minCgpa) : 0,
           start_date: startDate,
           deadline: deadline,
         }),
@@ -181,6 +188,7 @@ export default function CompanyDashboardPage() {
       setTitle("");
       setDescription("");
       setStipend("15000");
+      setMinCgpa("8.50");
       setStartDate("");
       setDeadline("");
 
@@ -194,6 +202,39 @@ export default function CompanyDashboardPage() {
       setModalError("Network error while creating internship.");
     } finally {
       setModalLoading(false);
+    }
+  }
+
+  async function handleAutoDiscard(internshipId?: number) {
+    setDiscarding(true);
+    setDiscardNotice("");
+    try {
+      const csrf = sessionStorage.getItem("skillsync_csrf_token") || "";
+      const res = await fetch(APPLICATIONS_API, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          ...(csrf ? { "X-CSRF-Token": csrf } : {}),
+        },
+        body: JSON.stringify({
+          action: "auto_discard",
+          ...(internshipId ? { internship_id: internshipId } : {}),
+          csrf_token: csrf,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setDiscardNotice(`⚡ ${data.message}`);
+        await loadCompanyData();
+        setTimeout(() => setDiscardNotice(""), 6000);
+      } else {
+        setDiscardNotice(data.message || "Failed to auto-discard candidates.");
+      }
+    } catch {
+      setDiscardNotice("Network error while auto-discarding candidates.");
+    } finally {
+      setDiscarding(false);
     }
   }
 
@@ -259,6 +300,16 @@ export default function CompanyDashboardPage() {
       app.student_name.toLowerCase().includes(search.toLowerCase()) ||
       app.internship_title.toLowerCase().includes(search.toLowerCase()) ||
       app.department.toLowerCase().includes(search.toLowerCase());
+
+    const isBelowCriteria =
+      app.min_cgpa &&
+      app.CGPA &&
+      Number(app.min_cgpa) > 0 &&
+      Number(app.CGPA) < Number(app.min_cgpa);
+
+    if (hideBelowCriteria && isBelowCriteria) {
+      return false;
+    }
 
     return matchesTab && matchesSearch;
   });
@@ -420,6 +471,9 @@ export default function CompanyDashboardPage() {
                           <p className="mt-2 text-sm text-cyan-300">
                             {formatStipend(internship.stipend)}
                           </p>
+                          <p className="mt-1 text-xs text-amber-300 font-semibold">
+                            🎯 Cutoff Criteria: {internship.min_cgpa && Number(internship.min_cgpa) > 0 ? `Min ${internship.min_cgpa} CGPA` : "No CGPA cutoff"}
+                          </p>
                           <p className="mt-1 text-xs text-slate-500">
                             Deadline: {formatDate(internship.deadline)}
                           </p>
@@ -439,6 +493,17 @@ export default function CompanyDashboardPage() {
                         <span className="rounded-full border border-slate-700 px-3 py-1 text-sm text-slate-300">
                           {countForThis} applicant{countForThis === 1 ? "" : "s"}
                         </span>
+                        {internship.min_cgpa && Number(internship.min_cgpa) > 0 && (
+                          <button
+                            type="button"
+                            disabled={discarding}
+                            onClick={() => void handleAutoDiscard(internship.internship_id)}
+                            title="Auto-reject pending applicants below this internship's cutoff CGPA"
+                            className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-300 hover:bg-red-500/20 disabled:opacity-50"
+                          >
+                            ⚡ Auto-Discard &lt; {internship.min_cgpa}
+                          </button>
+                        )}
                         <a
                           href="#applicants"
                           onClick={() => setSearch(internship.title)}
@@ -477,6 +542,50 @@ export default function CompanyDashboardPage() {
             </p>
           </div>
 
+          {/* Automated Criteria Screening & Auto-Discard Control */}
+          <div className="mb-6 rounded-xl border border-cyan-500/20 bg-cyan-950/20 p-4">
+            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-base">⚡</span>
+                  <h3 className="text-sm font-bold text-cyan-300">
+                    Automated Criteria Screening &amp; Auto-Discard
+                  </h3>
+                </div>
+                <p className="mt-1 text-xs text-slate-400">
+                  Enforces internship cutoff criteria (e.g. 9.0 CGPA). Applicants below requirement can be automatically marked as Rejected and removed from the active candidate pool.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  disabled={discarding}
+                  onClick={() => void handleAutoDiscard()}
+                  className="rounded-lg bg-red-500/20 border border-red-500/30 px-3.5 py-2 text-xs font-bold text-red-300 hover:bg-red-500/30 transition disabled:opacity-50"
+                >
+                  {discarding ? "Discarding..." : "⚡ Auto-Discard All Ineligible (< Cutoff)"}
+                </button>
+
+                <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer bg-slate-900 border border-slate-800 px-3 py-2 rounded-lg hover:border-slate-700">
+                  <input
+                    type="checkbox"
+                    checked={hideBelowCriteria}
+                    onChange={(e) => setHideBelowCriteria(e.target.checked)}
+                    className="rounded accent-cyan-400"
+                  />
+                  <span>Hide Ineligible Candidates</span>
+                </label>
+              </div>
+            </div>
+
+            {discardNotice && (
+              <div className="mt-3 rounded-lg border border-cyan-500/30 bg-cyan-500/10 p-2.5 text-xs text-cyan-200">
+                {discardNotice}
+              </div>
+            )}
+          </div>
+
           <div className="mb-5 flex flex-col gap-4 sm:flex-row">
             <input
               value={search}
@@ -500,32 +609,61 @@ export default function CompanyDashboardPage() {
 
           <div className="space-y-4">
             {filteredApplicants.length > 0 ? (
-              filteredApplicants.map((app) => (
-                <article
-                  key={app.application_id}
-                  className="rounded-xl border border-slate-800 bg-slate-950/70 p-5 transition hover:border-slate-700"
-                >
-                  <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
-                    <div className="flex gap-4">
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-slate-800 font-bold text-cyan-300">
-                        {app.student_name ? app.student_name.charAt(0) : "S"}
-                      </div>
+              filteredApplicants.map((app) => {
+                const isBelowCutoff =
+                  app.min_cgpa &&
+                  app.CGPA &&
+                  Number(app.min_cgpa) > 0 &&
+                  Number(app.CGPA) < Number(app.min_cgpa);
 
-                      <div>
-                        <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="font-semibold text-lg">{app.student_name}</h3>
-                          <span className="text-xs text-slate-400">· {app.student_email}</span>
+                const isAutoDiscarded =
+                  app.cover_letter?.includes("[AUTO-DISCARDED") || false;
+
+                return (
+                  <article
+                    key={app.application_id}
+                    className="rounded-xl border border-slate-800 bg-slate-950/70 p-5 transition hover:border-slate-700"
+                  >
+                    <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
+                      <div className="flex gap-4">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-slate-800 font-bold text-cyan-300">
+                          {app.student_name ? app.student_name.charAt(0) : "S"}
                         </div>
 
-                        <p className="mt-1 text-sm text-cyan-300">
-                          Applied for: <span className="font-medium text-white">{app.internship_title}</span>
-                        </p>
+                        <div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h3 className="font-semibold text-lg">{app.student_name}</h3>
+                            <span className="text-xs text-slate-400">· {app.student_email}</span>
+                            {isAutoDiscarded && (
+                              <span className="rounded-full bg-purple-500/20 border border-purple-500/30 px-2 py-0.5 text-[11px] font-bold text-purple-300">
+                                ⚡ Auto-Discarded
+                              </span>
+                            )}
+                            {isBelowCutoff && !isAutoDiscarded && (
+                              <span className="rounded-full bg-red-500/20 border border-red-500/30 px-2 py-0.5 text-[11px] font-bold text-red-300">
+                                ⚠️ Below Cutoff
+                              </span>
+                            )}
+                          </div>
 
-                        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400">
-                          <span>🎓 {app.department} (Year {app.year})</span>
-                          {app.CGPA && <span>📊 CGPA: {app.CGPA}</span>}
-                          <span>📅 Applied {formatDate(app.application_date)}</span>
-                        </div>
+                          <p className="mt-1 text-sm text-cyan-300">
+                            Applied for: <span className="font-medium text-white">{app.internship_title}</span>
+                          </p>
+
+                          <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-400">
+                            <span>🎓 {app.department} (Year {app.year})</span>
+                            {app.CGPA && (
+                              <span className={isBelowCutoff ? "font-bold text-red-300" : "text-emerald-300"}>
+                                📊 CGPA: {app.CGPA}
+                              </span>
+                            )}
+                            {app.min_cgpa && Number(app.min_cgpa) > 0 && (
+                              <span className="rounded bg-slate-800 px-2 py-0.5 text-slate-300">
+                                🎯 Req: &ge; {app.min_cgpa}
+                              </span>
+                            )}
+                            <span>📅 Applied {formatDate(app.application_date)}</span>
+                          </div>
 
                         {app.cover_letter && (
                           <p className="mt-3 rounded-lg bg-slate-900 p-3 text-xs leading-5 text-slate-300">
@@ -576,8 +714,9 @@ export default function CompanyDashboardPage() {
                     </div>
                   </div>
                 </article>
-              ))
-            ) : (
+              );
+            })
+          ) : (
               <div className="rounded-xl border border-dashed border-slate-700 p-8 text-center">
                 <p className="font-semibold">No applicants found</p>
                 <p className="mt-2 text-sm text-slate-400">
@@ -646,7 +785,7 @@ export default function CompanyDashboardPage() {
                 />
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className="grid gap-3 sm:grid-cols-2">
                 <div>
                   <label className="mb-1 block text-sm font-medium text-slate-300">
                     Location
@@ -689,6 +828,25 @@ export default function CompanyDashboardPage() {
                     placeholder="15000"
                     className="w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-white outline-none focus:border-cyan-400"
                   />
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-amber-300 font-semibold">
+                    🎯 Minimum CGPA Cutoff (e.g. 9.0)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="10"
+                    value={minCgpa}
+                    onChange={(e) => setMinCgpa(e.target.value)}
+                    placeholder="8.50 (0 for none)"
+                    className="w-full rounded-xl border border-amber-500/30 bg-slate-950 px-3 py-2.5 text-sm text-amber-300 font-semibold outline-none focus:border-cyan-400"
+                  />
+                  <span className="mt-1 block text-[11px] text-slate-400">
+                    Automatically discards candidates below this CGPA.
+                  </span>
                 </div>
               </div>
 

@@ -12,6 +12,7 @@ type Internship = {
   location: string;
   duration: string;
   stipend: string;
+  min_cgpa?: string | number | null;
   deadline: string | null;
   status: string;
 };
@@ -235,10 +236,16 @@ export default function StudentDashboard() {
 
                   <h3 className="mt-5 text-xl font-semibold">{job.title}</h3>
                   <p className="mt-2 text-slate-300">{job.company_name}</p>
-                  <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-400">
+                  <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-400">
                     <span>📍 {job.location}</span>
                     <span>·</span>
                     <span>💰 {formatStipend(job.stipend)}</span>
+                    {job.min_cgpa && Number(job.min_cgpa) > 0 && (
+                      <>
+                        <span>·</span>
+                        <span className="text-amber-300 font-semibold">🎯 Cutoff: &ge; {Number(job.min_cgpa).toFixed(2)}</span>
+                      </>
+                    )}
                   </div>
 
                   <Link

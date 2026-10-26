@@ -54,6 +54,7 @@ CREATE TABLE internship (
     location VARCHAR(100),
     duration VARCHAR(50),
     stipend DECIMAL(10,2),
+    min_cgpa DECIMAL(3,2) DEFAULT 0.00,
     start_date DATE,
     deadline DATE,
     status VARCHAR(20) DEFAULT 'Open',

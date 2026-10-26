@@ -201,6 +201,57 @@ BEGIN
 END$$
 DELIMITER ;
 
+-- Trigger 2: trg_auto_discard_ineligible_applicant
+-- Purpose: Automatically discards applicants from the candidate pool whose CGPA does not meet
+-- the internship's minimum required CGPA threshold by setting status to 'Rejected'.
+DROP TRIGGER IF EXISTS trg_auto_discard_ineligible_applicant;
+
+DELIMITER $$
+CREATE TRIGGER trg_auto_discard_ineligible_applicant
+BEFORE INSERT ON application
+FOR EACH ROW
+BEGIN
+    DECLARE v_student_cgpa DECIMAL(3,2);
+    DECLARE v_min_cgpa DECIMAL(3,2);
+
+    SELECT CGPA INTO v_student_cgpa FROM student WHERE student_id = NEW.student_id;
+    SELECT COALESCE(min_cgpa, 0.00) INTO v_min_cgpa FROM internship WHERE internship_id = NEW.internship_id;
+
+    IF v_min_cgpa > 0.00 AND v_student_cgpa IS NOT NULL AND v_student_cgpa < v_min_cgpa THEN
+        SET NEW.status = 'Rejected';
+        SET NEW.cover_letter = CONCAT('[AUTO-DISCARDED: Student CGPA (', v_student_cgpa, ') is below minimum required (', v_min_cgpa, ')] ', COALESCE(NEW.cover_letter, ''));
+    END IF;
+END$$
+DELIMITER ;
+
+-- Stored Procedure: sp_auto_discard_by_cgpa
+-- Purpose: Batch-discards all pending applicants for a given internship whose CGPA is below a specified cutoff.
+DROP PROCEDURE IF EXISTS sp_auto_discard_by_cgpa;
+
+DELIMITER $$
+CREATE PROCEDURE sp_auto_discard_by_cgpa(
+    IN p_internship_id INT,
+    IN p_min_cgpa DECIMAL(3,2),
+    OUT p_discarded_count INT
+)
+BEGIN
+    SELECT COUNT(*) INTO p_discarded_count
+    FROM application a
+    JOIN student s ON a.student_id = s.student_id
+    WHERE a.internship_id = p_internship_id
+      AND a.status = 'Pending'
+      AND s.CGPA < p_min_cgpa;
+
+    UPDATE application a
+    JOIN student s ON a.student_id = s.student_id
+    SET a.status = 'Rejected',
+        a.cover_letter = CONCAT('[AUTO-DISCARDED: Student CGPA (', s.CGPA, ') is below criteria threshold (', p_min_cgpa, ')] ', COALESCE(a.cover_letter, ''))
+    WHERE a.internship_id = p_internship_id
+      AND a.status = 'Pending'
+      AND s.CGPA < p_min_cgpa;
+END$$
+DELIMITER ;
+
 
 -- ----------------------------------------------------------------------------
 -- 5. VERIFICATION & TEST SCRIPTS (Run to demonstrate to your examiner)

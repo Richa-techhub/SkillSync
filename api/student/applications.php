@@ -112,7 +112,8 @@ try {
             ]);
         }
 
-        // Insert the application. Status uses the database default.
+        // Insert the application. The trg_auto_discard_ineligible_applicant trigger automatically
+        // evaluates the student CGPA against internship.min_cgpa and sets status to 'Rejected' if below criteria.
         $insertStmt = $pdo->prepare(
             'INSERT INTO application
                 (student_id, internship_id, application_date, resume, cover_letter)
@@ -126,10 +127,21 @@ try {
             $coverLetter !== '' ? $coverLetter : null
         ]);
 
+        $appId = (int)$pdo->lastInsertId();
+        $statusStmt = $pdo->prepare('SELECT status FROM application WHERE application_id = ?');
+        $statusStmt->execute([$appId]);
+        $savedApp = $statusStmt->fetch(PDO::FETCH_ASSOC);
+        $finalStatus = $savedApp['status'] ?? 'Pending';
+        $isDiscarded = (strtolower($finalStatus) === 'rejected');
+
         jsonResponse(201, [
             'success' => true,
-            'message' => 'Application submitted successfully',
-            'application_id' => (int)$pdo->lastInsertId()
+            'message' => $isDiscarded
+                ? 'Application recorded, but automatically discarded because your CGPA does not meet the minimum criteria.'
+                : 'Application submitted successfully',
+            'status' => $finalStatus,
+            'auto_discarded' => $isDiscarded,
+            'application_id' => $appId
         ]);
     }
 

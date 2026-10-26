@@ -46,6 +46,7 @@ try {
                 ua.email AS student_email,
                 i.internship_id,
                 i.title AS internship_title,
+                COALESCE(i.min_cgpa, 0.00) AS min_cgpa,
                 a.application_date,
                 a.status,
                 a.resume,
@@ -70,7 +71,7 @@ try {
         ]);
     }
 
-    // POST: Update an application's status.
+    // POST: Update an application's status or trigger auto-discard.
     $data = json_decode(file_get_contents('php://input'), true);
 
     if (!is_array($data)) {
@@ -94,6 +95,63 @@ try {
             'success' => false,
             'message' => 'Invalid or missing CSRF token'
         ]);
+    }
+
+    // Action: Auto-discard candidates below criteria threshold
+    if (isset($data['action']) && $data['action'] === 'auto_discard') {
+        $internshipId = isset($data['internship_id']) && $data['internship_id'] ? (int)$data['internship_id'] : 0;
+        $minCgpa = isset($data['min_cgpa']) && is_numeric($data['min_cgpa']) ? round((float)$data['min_cgpa'], 2) : null;
+
+        if ($internshipId > 0) {
+            $intCheck = $pdo->prepare('SELECT internship_id, COALESCE(min_cgpa, 0.00) as min_cgpa FROM internship WHERE internship_id = ? AND company_id = ?');
+            $intCheck->execute([$internshipId, $companyId]);
+            $intRow = $intCheck->fetch(PDO::FETCH_ASSOC);
+
+            if (!$intRow) {
+                jsonResponse(404, ['success' => false, 'message' => 'Internship not found for this company']);
+            }
+
+            $effectiveCgpa = $minCgpa !== null ? $minCgpa : (float)$intRow['min_cgpa'];
+
+            $discardStmt = $pdo->prepare("
+                UPDATE application a
+                JOIN student s ON a.student_id = s.student_id
+                SET a.status = 'Rejected',
+                    a.cover_letter = CONCAT('[AUTO-DISCARDED: Student CGPA (', s.CGPA, ') is below the criteria threshold (', ?, ')] ', COALESCE(a.cover_letter, ''))
+                WHERE a.internship_id = ?
+                  AND a.status = 'Pending'
+                  AND s.CGPA < ?
+            ");
+            $discardStmt->execute([$effectiveCgpa, $internshipId, $effectiveCgpa]);
+            $count = $discardStmt->rowCount();
+
+            jsonResponse(200, [
+                'success' => true,
+                'message' => "Successfully auto-discarded $count applicant(s) below {$effectiveCgpa} CGPA.",
+                'discarded_count' => $count
+            ]);
+        } else {
+            // Bulk discard across all internships for this company
+            $discardStmt = $pdo->prepare("
+                UPDATE application a
+                JOIN student s ON a.student_id = s.student_id
+                JOIN internship i ON a.internship_id = i.internship_id
+                SET a.status = 'Rejected',
+                    a.cover_letter = CONCAT('[AUTO-DISCARDED: Student CGPA (', s.CGPA, ') is below criteria (', i.min_cgpa, ')] ', COALESCE(a.cover_letter, ''))
+                WHERE i.company_id = ?
+                  AND a.status = 'Pending'
+                  AND i.min_cgpa > 0
+                  AND s.CGPA < i.min_cgpa
+            ");
+            $discardStmt->execute([$companyId]);
+            $count = $discardStmt->rowCount();
+
+            jsonResponse(200, [
+                'success' => true,
+                'message' => "Successfully auto-discarded $count applicant(s) below criteria.",
+                'discarded_count' => $count
+            ]);
+        }
     }
 
     $applicationId = filter_var(

@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 
 type Internship = {
   internship_id: number;
@@ -13,6 +14,7 @@ type Internship = {
   location: string;
   duration: string;
   stipend: string;
+  min_cgpa?: string | number | null;
   start_date: string | null;
   deadline: string | null;
   status: string;
@@ -25,13 +27,15 @@ type ApiResponse = {
 };
 
 type Props = {
-  internshipId: string;
+  internshipId?: string;
 };
 
 const API_URL =
   "http://localhost/skillsync/api/student/internships.php";
 const APPLICATIONS_API_URL =
   "http://localhost/skillsync/api/student/applications.php";
+const PROFILE_API_URL =
+  "http://localhost/skillsync/api/student/profile.php";
 
 function formatDate(date: string | null) {
   if (!date) return "Not specified";
@@ -56,11 +60,14 @@ function formatStipend(stipend: string) {
 }
 
 export default function InternshipDetailsClient({
-  internshipId,
+  internshipId: propInternshipId,
 }: Props) {
+  const routeParams = useParams();
+  const internshipId = propInternshipId || (routeParams?.id as string) || "";
   const [internship, setInternship] = useState<Internship | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [studentCgpa, setStudentCgpa] = useState<number | null>(null);
 
   const [hasApplied, setHasApplied] = useState(false);
   const [showApplyModal, setShowApplyModal] = useState(false);
@@ -142,8 +149,30 @@ export default function InternshipDetailsClient({
       }
     }
 
+    async function loadProfile() {
+      try {
+        const response = await fetch(PROFILE_API_URL, {
+          method: "GET",
+          credentials: "include",
+          headers: { Accept: "application/json" },
+        });
+        if (response.ok) {
+          const res = await response.json();
+          if (res.success && res.data && res.data.CGPA !== null) {
+            const parsed = parseFloat(res.data.CGPA);
+            if (!isNaN(parsed) && !cancelled) {
+              setStudentCgpa(parsed);
+            }
+          }
+        }
+      } catch {
+        // Non-blocking
+      }
+    }
+
     loadInternship();
     checkExistingApplication();
+    loadProfile();
 
     return () => {
       cancelled = true;
@@ -290,6 +319,26 @@ export default function InternshipDetailsClient({
                   <p className="mt-1 font-medium">
                     {formatDate(internship.deadline)}
                   </p>
+
+                  {Number(internship.min_cgpa || 0) > 0 && (
+                    <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs">
+                      <p className="font-semibold text-amber-300">
+                        🎯 Cutoff Criteria: &ge; {Number(internship.min_cgpa).toFixed(2)} CGPA
+                      </p>
+                      {studentCgpa !== null && (
+                        <p className={`mt-1 font-medium ${studentCgpa < Number(internship.min_cgpa) ? "text-red-300" : "text-emerald-300"}`}>
+                          Your CGPA: {studentCgpa.toFixed(2)} {studentCgpa < Number(internship.min_cgpa) ? "⚠️ (Below Cutoff)" : "✓ (Eligible)"}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {Number(internship.min_cgpa || 0) > 0 && studentCgpa !== null && studentCgpa < Number(internship.min_cgpa) && (
+                    <div className="mt-3 rounded-lg border border-red-500/30 bg-red-500/10 p-2.5 text-xs text-red-300">
+                      ⚠️ <strong>Automated Cutoff Warning:</strong> Your CGPA is below the minimum requirement. Submitting will trigger the system's auto-discard rule.
+                    </div>
+                  )}
+
                   {hasApplied ? (
                     <div className="mt-5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-center text-sm font-semibold text-emerald-300">
                       ✓ Application Submitted
@@ -419,6 +468,19 @@ export default function InternshipDetailsClient({
                   className="w-full rounded-xl border border-white/10 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-cyan-400"
                 />
               </div>
+
+              {Number(internship.min_cgpa || 0) > 0 && (
+                <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs">
+                  <p className="font-semibold text-amber-300">
+                    🎯 Minimum CGPA Cutoff: &ge; {Number(internship.min_cgpa).toFixed(2)}
+                  </p>
+                  {studentCgpa !== null && studentCgpa < Number(internship.min_cgpa) && (
+                    <p className="mt-1 text-red-300">
+                      ⚠️ <strong>Automated Auto-Discard:</strong> Your CGPA ({studentCgpa.toFixed(2)}) is below this requirement. Your application will be recorded, but automatically marked as <strong>Rejected</strong> by the database screening trigger.
+                    </p>
+                  )}
+                </div>
+              )}
 
               {applyError && (
                 <p className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300">

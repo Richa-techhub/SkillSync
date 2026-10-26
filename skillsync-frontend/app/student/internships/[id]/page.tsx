@@ -1,14 +1,10 @@
-
+import { Suspense } from "react";
 import InternshipDetailsClient from "./InternshipDetailsClient";
 
-type PageProps = {
-  params: Promise<{ id: string }>;
-};
-
-export default async function InternshipDetailsPage({
-  params,
-}: PageProps) {
-  const { id } = await params;
-
-  return <InternshipDetailsClient internshipId={id} />;
+export default function InternshipDetailsPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-950 p-8 text-center text-white">Loading opportunity...</div>}>
+      <InternshipDetailsClient />
+    </Suspense>
+  );
 }

@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillSync - Complete Project Presentation & Viva Defense Guide</title>
+<style>
+  @page {
+    size: A4;
+    margin: 14mm 14mm 14mm 14mm;
+  }
+  * {
+    box-sizing: border-box;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+    color: #1e293b;
+    background-color: #ffffff;
+    line-height: 1.55;
+    font-size: 13.5px;
+    margin: 0;
+    padding: 0;
+  }
+  .header-cover {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0284c7 100%);
+    color: white;
+    padding: 32px 30px;
+    border-radius: 10px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  }
+  .header-cover h1 {
+    font-size: 26px;
+    margin: 0 0 6px 0;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .header-cover .subtitle {
+    font-size: 15px;
+    opacity: 0.92;
+    margin-bottom: 14px;
+    font-weight: 400;
+  }
+  .meta-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .badge {
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  h2 {
+    font-size: 18px;
+    color: #0f172a;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 6px;
+    margin-top: 28px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    page-break-after: avoid;
+  }
+  h3 {
+    font-size: 15px;
+    color: #1e3a8a;
+    margin-top: 18px;
+    margin-bottom: 8px;
+    page-break-after: avoid;
+  }
+  h4 {
+    font-size: 13.5px;
+    color: #334155;
+    margin-top: 10px;
+    margin-bottom: 4px;
+  }
+  p {
+    margin: 0 0 10px 0;
+  }
+  ul, ol {
+    margin: 0 0 12px 0;
+    padding-left: 20px;
+  }
+  li {
+    margin-bottom: 4px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0 20px 0;
+    font-size: 12.5px;
+    page-break-inside: avoid;
+  }
+  th, td {
+    padding: 8px 12px;
+    text-align: left;
+    border: 1px solid #cbd5e1;
+    vertical-align: top;
+  }
+  th {
+    background-color: #f1f5f9;
+    color: #0f172a;
+    font-weight: 700;
+  }
+  tr:nth-child(even) td {
+    background-color: #f8fafc;
+  }
+  .card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #2563eb;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    page-break-inside: avoid;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  }
+  .card-slide {
+    border-left-color: #0284c7;
+    background: #fdfdfd;
+  }
+  .card-slide .slide-title {
+    font-weight: 700;
+    color: #0369a1;
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  .card-demo {
+    border-left-color: #10b981;
+  }
+  .card-demo .demo-step {
+    font-weight: 700;
+    color: #059669;
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  .card-qa {
+    border-left-color: #8b5cf6;
+    margin-bottom: 12px;
+  }
+  .card-qa .question {
+    font-weight: 700;
+    color: #6d28d9;
+    margin-bottom: 4px;
+    font-size: 13.5px;
+  }
+  .card-qa .answer {
+    color: #334155;
+    font-size: 12.5px;
+  }
+  .quote-box {
+    background: #eff6ff;
+    border: 1px dashed #93c5fd;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-style: italic;
+    color: #1e40af;
+    margin: 8px 0;
+    font-size: 12.5px;
+  }
+  .badge-tech {
+    background: #e2e8f0;
+    color: #1e293b;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .code-inline {
+    background: #f1f5f9;
+    color: #b91c1c;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: Consolas, monospace;
+    font-size: 12px;
+  }
+  .alert-warning {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-left: 4px solid #f59e0b;
+    padding: 10px 14px;
+    border-radius: 4px;
+    margin: 10px 0;
+    font-size: 12.5px;
+  }
+  .alert-tip {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-left: 4px solid #10b981;
+    padding: 10px 14px;
+    border-radius: 4px;
+    margin: 10px 0;
+    font-size: 12.5px;
+  }
+  .page-break {
+    page-break-before: always;
+  }
+  .footer-note {
+    text-align: center;
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 30px;
+    padding-top: 10px;
+    border-top: 1px solid #e2e8f0;
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER HEADER -->
+<div class="header-cover">
+  <h1>SkillSync — Presentation &amp; Viva Defense Guide</h1>
+  <div class="subtitle">Complete Step-by-Step Blueprint: Slides, Live Demo Script, Examiner Q&amp;A, and Delivery Strategy</div>
+  <div class="meta-badges">
+    <span class="badge">Project: Student Skill &amp; Internship Management</span>
+    <span class="badge">Stack: Next.js + PHP 8 + MySQL</span>
+    <span class="badge">Scope: Academic Review &amp; Final Evaluation</span>
+    <span class="badge">Target Time: 10–15 Minutes</span>
+  </div>
+</div>
+
+<!-- SECTION 1 -->
+<h2>1. Presentation Time Management Strategy</h2>
+<p>An academic presentation typically runs between <strong>10 and 15 minutes</strong> followed by <strong>5 minutes of Viva / Q&amp;A</strong>. Adhere strictly to this time allocation:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width: 22%;">Phase</th>
+      <th style="width: 15%;">Allotted Time</th>
+      <th style="width: 38%;">Primary Objectives</th>
+      <th style="width: 25%;">Presenting Focus</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>1. Introduction &amp; Problem</strong></td>
+      <td>1.5 – 2 mins</td>
+      <td>Problem context, pain points of manual placement cells, solution vision.</td>
+      <td>Business impact &amp; motivation</td>
+    </tr>
+    <tr>
+      <td><strong>2. System Architecture</strong></td>
+      <td>1.5 – 2 mins</td>
+      <td>3-Tier design: Next.js frontend, PHP PDO REST API, MySQL database.</td>
+      <td>Engineering flow &amp; modularity</td>
+    </tr>
+    <tr>
+      <td><strong>3. Database &amp; DBMS Depth</strong></td>
+      <td>2.5 – 3 mins</td>
+      <td>Schema normalization (3NF), ER design, Stored Procedures, Triggers, Views.</td>
+      <td>Technical rigor &amp; constraints</td>
+    </tr>
+    <tr>
+      <td><strong>4. Live Demonstration</strong></td>
+      <td>4 – 5 mins</td>
+      <td>Admin overview &rarr; Company job post &rarr; Student application &rarr; Recruiter review.</td>
+      <td>Smooth, working application flow</td>
+    </tr>
+    <tr>
+      <td><strong>5. Security &amp; Future Scope</strong></td>
+      <td>1 min</td>
+      <td>Bcrypt password hashing, SQL injection prevention, future AI capabilities.</td>
+      <td>Robustness &amp; roadmap</td>
+    </tr>
+    <tr>
+      <td><strong>6. Examiner Viva / Q&amp;A</strong></td>
+      <td>3 – 5 mins</td>
+      <td>Confidently defending schema decisions, triggers, and query optimizations.</td>
+      <td>Demonstrating deep mastery</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- SECTION 2 -->
+<h2>2. Slide-by-Slide Blueprint (12 Slides)</h2>
+<p>Each slide is planned with exact content points and what to say during the presentation:</p>
+
+<div class="card card-slide">
+  <div class="slide-title">Slide 1: Title &amp; Team Details</div>
+  <ul>
+    <li><strong>Title:</strong> SkillSync — Student Skill &amp; Internship Management System</li>
+    <li><strong>Subtitle:</strong> A Centralized Relational Platform for Campus Placements and Applicant Tracking</li>
+    <li><strong>Details:</strong> Team members' names, roll numbers, department, supervisor/guide name, academic year.</li>
+  </ul>
+  <div class="quote-box">
+    <strong>Speaker Script:</strong> "Good morning respected evaluators and professors. Today we are presenting SkillSync, a database-driven student skill and internship management platform designed to streamline campus recruitment for students, recruiters, and placement officers."
+  </div>
+</div>
+
+<div class="card card-slide">
+  <div class="slide-title">Slide 2: Problem Statement &amp; Motivation</div>
+  <ul>
+    <li><strong>Current Challenges:</strong> Manual placement tracking via messy spreadsheets and fragmented email chains.</li>
+    <li><strong>Student Pain Points:</strong> Missed application deadlines, zero real-time tracking, no verified skill tagging.</li>
+    <li><strong>Recruiter Pain Points:</strong> Manual resume sorting, lack of filtered search by skill proficiencies, uncoordinated interview scheduling.</li>
+    <li><strong>Administrative Pain Points:</strong> No consolidated reporting or live campus-wide placement metrics.</li>
+  </ul>
+  <div class="quote-box">
+    <strong>Speaker Script:</strong> "During campus placement drives, college placement cells handle hundreds of students and dozens of companies. The existing reliance on Google Sheets and emails leads to data duplication, missed deadlines, and zero visibility for students. SkillSync was developed to replace this manual chaos with a unified, role-based database platform."
+  </div>
+</div>
+
+<div class="card card-slide">
+  <div class="slide-title">Slide 3: Proposed Solution &amp; Key Features</div>
+  <ul>
+    <li><strong>Role-Based Access Control (RBAC):</strong> Tailored interfaces and permission levels for Students, Companies, and Admins.</li>
+    <li><strong>Skill-Centric Matchmaking:</strong> Verified student skills mapped directly against company internship prerequisites.</li>
+    <li><strong>Real-Time Lifecycle Tracking:</strong> Dynamic status updates: Pending &rarr; Shortlisted &rarr; Interview Scheduled &rarr; Accepted / Rejected.</li>
+    <li><strong>Automated Business Rule Enforcement:</strong> Database-enforced application deadlines and duplicate application prevention.</li>
+  </ul>
+</div>
+
+<div class="card card-slide">
+  <div class="slide-title">Slide 4: System Architecture &amp; Technology Stack</div>
+  <ul>
+    <li><strong>Presentation Tier (Frontend):</strong> Next.js (React, TypeScript, responsive CSS) providing an interactive, client-side rendered SPA experience.</li>
+    <li><strong>Application Tier (Backend API):</strong> PHP 8.x with native PDO, session management, CSRF validation, and clean RESTful JSON endpoints.</li>
+    <li><strong>Data Tier (Database):</strong> MySQL (<span class="code-inline">skillsync_db</span>) running on Apache/XAMPP with relational constraints, foreign keys, and indexes.</li>
+  </ul>
+  <div class="quote-box">
+    <strong>Speaker Script:</strong> "We engineered a clean 3-tier decoupled architecture. By having Next.js communicate with our PHP backend through secured REST endpoints, business logic and data access are completely isolated from the presentation layer."
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<div class="card card-slide">
+  <div class="slide-title">Slide 5: Database Schema &amp; Normalization (3NF / BCNF)</div>
+  <ul>
+    <li><strong>Core Relational Tables:</strong> 9 dedicated tables (<span class="code-inline">user_account</span>, <span class="code-inline">student</span>, <span class="code-inline">company</span>, <span class="code-inline">admin</span>, <span class="code-inline">skill</span>, <span class="code-inline">internship</span>, <span class="code-inline">application</span>, <span class="code-inline">interview</span>, <span class="code-inline">student_skill</span>, <span class="code-inline">internship_skill</span>).</li>
+    <li><strong>De-composition of M:N Relationships:</strong> Associative junction tables with composite primary keys (<span class="code-inline">student_id, skill_id</span>) and (<span class="code-inline">internship_id, skill_id</span>).</li>
+    <li><strong>Normalization Level:</strong> Every non-key attribute is non-transitively dependent on the primary key, achieving strict 3NF/BCNF compliance to prevent insertion, update, and deletion anomalies.</li>
+  </ul>
+  <div class="quote-box">
+    <strong>Speaker Script:</strong> "Our database schema is fully normalized up to 3NF. For instance, company metadata is separated from internship postings, so updating a recruiter's phone number takes place in a single record without redundancy."
+  </div>
+</div>
+
+<div class="card card-slide">
+  <div class="slide-title">Slide 6: Advanced DBMS Objects (Views, Stored Procedures, Triggers)</div>
+  <ul>
+    <li><strong>Database Views:</strong>
+      <ul>
+        <li><span class="code-inline">v_open_internships</span>: Pre-joins active internships with company contact details for fast indexing.</li>
+        <li><span class="code-inline">v_student_application_details</span>: Consolidates academic records, applied roles, and review statuses for admin reporting.</li>
+      </ul>
+    </li>
+    <li><strong>Stored Procedures:</strong>
+      <ul>
+        <li><span class="code-inline">sp_get_company_analytics</span>: Computes real-time recruiter KPI metrics (total posted, total applicants, shortlisted) via OUT parameters.</li>
+        <li><span class="code-inline">sp_submit_application</span>: Transactionally validates vacancy availability and prevents duplicates before insertion.</li>
+      </ul>
+    </li>
+    <li><strong>Triggers:</strong>
+      <ul>
+        <li><span class="code-inline">trg_validate_application_deadline</span>: BEFORE INSERT trigger rejecting applications submitted past the internship deadline date.</li>
+      </ul>
+    </li>
+    <li><strong>User-Defined Functions (UDF):</strong>
+      <ul>
+        <li><span class="code-inline">fn_student_skill_count</span>: Returns total acquired skills per student.</li>
+      </ul>
+    </li>
+  </ul>
+  <div class="alert-tip">
+    <strong>Examiner Note:</strong> This slide proves high DBMS maturity beyond standard basic student projects!
+  </div>
+</div>
+
+<div class="card card-slide">
+  <div class="slide-title">Slide 7: User Flow &amp; Process Sequence</div>
+  <ul>
+    <li><strong>Recruiter Workflow:</strong> Login &rarr; Post Internship &rarr; Tag Required Skills &rarr; Review Applicants &rarr; Schedule Interview.</li>
+    <li><strong>Student Workflow:</strong> Register &rarr; Update Profile &amp; Skills &rarr; Browse Opportunities &rarr; Submit Application &rarr; Monitor Status.</li>
+    <li><strong>Administrator Workflow:</strong> Monitor KPI stats &rarr; Audit Student and Company directories &rarr; Manage portal integrity.</li>
+  </ul>
+</div>
+
+<div class="card card-slide">
+  <div class="slide-title">Slide 8: Live System Demonstration (Demo Transition)</div>
+  <ul>
+    <li>Transition slide announcing the live demonstration across all three system roles.</li>
+  </ul>
+</div>
+
+<div class="card card-slide">
+  <div class="slide-title">Slide 9: Security, Validation &amp; Data Integrity</div>
+  <ul>
+    <li><strong>Password Security:</strong> Bcrypt adaptive hashing stored in <span class="code-inline">user_account.password_hash</span>.</li>
+    <li><strong>Injection Defense:</strong> Native PDO parameterized prepared statements preventing SQL injection attacks.</li>
+    <li><strong>Database Integrity:</strong> Cascade referential constraints, unique compound keys, and custom SQLSTATE triggers.</li>
+  </ul>
+</div>
+
+<div class="card card-slide">
+  <div class="slide-title">Slide 10: Technical Challenges &amp; Engineering Solutions</div>
+  <ul>
+    <li><strong>Challenge 1:</strong> Synchronizing relational data with modern client-side React frontend without state desync.</li>
+    <li><strong>Solution 1:</strong> Engineered standardized REST API JSON contracts with structured error codes and session validation.</li>
+    <li><strong>Challenge 2:</strong> Preventing race conditions or duplicate applications during peak recruitment drives.</li>
+    <li><strong>Solution 2:</strong> Placed composite unique constraints <span class="code-inline">UNIQUE (student_id, internship_id)</span> directly at the storage engine level.</li>
+  </ul>
+</div>
+
+<div class="card card-slide">
+  <div class="slide-title">Slide 11: Future Enhancements</div>
+  <ul>
+    <li>Automated resume parsing using natural language processing to extract skills into database entities.</li>
+    <li>Algorithmic recommendation engine matching students to internships based on cosine similarity of skill vectors.</li>
+    <li>Automated email / SMS push notifications for scheduled interviews.</li>
+  </ul>
+</div>
+
+<div class="card card-slide">
+  <div class="slide-title">Slide 12: Conclusion &amp; Open Q&amp;A</div>
+  <ul>
+    <li>Summary statement of project success and scalability.</li>
+    <li>Invitation for evaluator questions and discussion.</li>
+  </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- SECTION 3 -->
+<h2>3. Step-by-Step Live Demonstration Script</h2>
+<p>Execute this sequential workflow during your live demo. Practicing this specific order prevents confusion and displays complete system cohesion:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width: 12%;">Step</th>
+      <th style="width: 25%;">User Role / Screen</th>
+      <th style="width: 38%;">Action to Perform</th>
+      <th style="width: 25%;">What to Point Out to Examiners</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Step 1</strong></td>
+      <td><strong>Admin Portal</strong><br>(<span class="code-inline">admin@skillsync.com</span>)</td>
+      <td>Log in to Admin Dashboard. View total students, registered companies, active postings, and searchable student/employer tables.</td>
+      <td>Showcase centralized administrative audit controls and real-time aggregate statistics.</td>
+    </tr>
+    <tr>
+      <td><strong>Step 2</strong></td>
+      <td><strong>Company Portal</strong><br>(<span class="code-inline">contact@techcorp.com</span>)</td>
+      <td>Show Company Analytics KPI metrics (powered by <span class="code-inline">sp_get_company_analytics</span>). Click "Post Internship" &rarr; fill title, stipend, deadline, and select required skills.</td>
+      <td>Demonstrates relational creation of internship and mapping to <span class="code-inline">internship_skill</span>.</td>
+    </tr>
+    <tr>
+      <td><strong>Step 3</strong></td>
+      <td><strong>Student Portal</strong><br>(<span class="code-inline">rahul.sharma@example.com</span>)</td>
+      <td>Log in as Rahul. Show profile details (CGPA, department) and add a skill. Navigate to "Browse Internships" &rarr; find newly posted job &rarr; click Apply &rarr; submit cover letter.</td>
+      <td>Point out student profile linking and immediate status set to "Pending".</td>
+    </tr>
+    <tr>
+      <td><strong>Step 4</strong></td>
+      <td><strong>Company Review &amp; Status Update</strong></td>
+      <td>Switch to Company window &rarr; open Applicants tab. See Rahul's application. Change status from "Pending" &rarr; "Shortlisted" / "Accepted".</td>
+      <td>Real-time status synchronization between recruiter and candidate.</td>
+    </tr>
+    <tr>
+      <td><strong>Step 5</strong></td>
+      <td><strong>Database &amp; Trigger Verification</strong><br><em>(The Impressive Pro Move)</em></td>
+      <td>Log back into Student &rarr; attempt to apply again to the same internship. Show the error: duplicate prevented! Then switch to phpMyAdmin and execute:<br>
+      <span class="code-inline">SELECT * FROM v_student_application_details;</span></td>
+      <td>Proves that database integrity constraints and SQL views are actively functional.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- SECTION 4 -->
+<h2>4. Team Roles &amp; Speaking Division</h2>
+
+<div class="card">
+  <h4>If Presenting as a 3-Person Team:</h4>
+  <ul>
+    <li><strong>Member 1 (Team Lead / System Overview):</strong>
+      <br>Presents Slides 1–3 (Intro, Problem Statement, Objectives, RBAC) &rarr; Demonstrates the Admin Portal &rarr; Concludes with Slides 11–12 (Future Scope &amp; Summary).
+    </li>
+    <li><strong>Member 2 (Database &amp; Backend Specialist):</strong>
+      <br>Presents Slides 4–6 (Architecture, ER Diagram, Schema Normalization, Stored Procedures, Triggers, Views) &rarr; Shows phpMyAdmin schema &amp; test query outputs during the demo.
+    </li>
+    <li><strong>Member 3 (Frontend &amp; Application Workflow Specialist):</strong>
+      <br>Presents Slides 7–10 (User Flows, Security, Implementation Challenges) &rarr; Conducts the live walkthrough of Company posting and Student application.
+    </li>
+  </ul>
+</div>
+
+<div class="card">
+  <h4>If Presenting Solo:</h4>
+  <p>Deliver the introduction smoothly in 2 minutes, spend 3 minutes showing the architecture and ER diagram, spend 5 minutes on the live demo, and spend the final 2 minutes on database triggers and conclusion.</p>
+</div>
+
+<!-- SECTION 5 -->
+<h2>5. Exact Presentation Script (Word-for-Word Pitch)</h2>
+
+<div class="quote-box">
+  <strong>Introduction (30 Seconds):</strong><br>
+  "Respected professors and evaluators, good morning. During placement drives, coordinating hundreds of student profiles, company criteria, and application stages manually is inefficient and error-prone. To solve this, we engineered SkillSync — a database-driven student skill and internship management platform. SkillSync unites students, employers, and placement administrators into a singular, structured ecosystem."
+</div>
+
+<div class="quote-box">
+  <strong>Database &amp; Architecture Pitch (45 Seconds):</strong><br>
+  "Rather than treating the database as a dumb storage layer, SkillSync enforces business logic at the data tier. Our schema is strictly normalized to 3NF across 9 relational tables. We have incorporated Stored Procedures for instant recruiter analytics, Views for fast application auditing, and BEFORE INSERT triggers to strictly reject expired or duplicate applications."
+</div>
+
+<div class="quote-box">
+  <strong>Conclusion &amp; Closing (20 Seconds):</strong><br>
+  "In conclusion, SkillSync bridges the campus-to-corporate divide by making recruitment transparent, secure, and data-driven. Thank you for your time, and we are now ready to take your questions."
+</div>
+
+<div class="page-break"></div>
+
+<!-- SECTION 6 -->
+<h2>6. Top 15 Viva / Examiner Q&amp;A (With Model Answers)</h2>
+<p>These are the exact questions professors and external examiners ask during DBMS and Web Development evaluations:</p>
+
+<div class="card card-qa">
+  <div class="question">Q1: Why is your database normalized to 3NF/BCNF? What are the practical benefits?</div>
+  <div class="answer"><strong>Model Answer:</strong> "Normalization removes redundant data and eliminates insertion, update, and deletion anomalies. For example, company data is isolated in the <span class="code-inline">company</span> table rather than duplicated inside every internship record. If a company updates its website or phone number, it updates in exactly one place, maintaining complete referential consistency."</div>
+</div>
+
+<div class="card card-qa">
+  <div class="question">Q2: How do you handle Many-to-Many (M:N) relationships in your relational model?</div>
+  <div class="answer"><strong>Model Answer:</strong> "A student has many skills, and a skill belongs to many students. A relational engine cannot natively represent direct M:N links without duplication. We decomposed this into two 1-to-Many relationships via the associative entity <span class="code-inline">student_skill</span>, using a composite primary key <span class="code-inline">(student_id, skill_id)</span>. We applied the identical design for <span class="code-inline">internship_skill</span>."</div>
+</div>
+
+<div class="card card-qa">
+  <div class="question">Q3: Why use a Database Trigger instead of just checking the deadline in PHP or JavaScript?</div>
+  <div class="answer"><strong>Model Answer:</strong> "Frontend and API validations can be bypassed via direct script execution or compromised requests. Our trigger <span class="code-inline">trg_validate_application_deadline</span> operates at the database engine level. If an insertion is attempted after the deadline, MySQL aborts the transaction with an SQLSTATE exception, ensuring data integrity is never compromised."</div>
+</div>
+
+<div class="card card-qa">
+  <div class="question">Q4: What is the purpose of Stored Procedures in SkillSync?</div>
+  <div class="answer"><strong>Model Answer:</strong> "Our stored procedure <span class="code-inline">sp_get_company_analytics</span> pre-compiles execution plans on the MySQL server, reducing network latency. Rather than firing multiple independent COUNT queries across HTTP, a single procedure call computes total postings, total applicants, and shortlisted candidates, returning them via OUT parameters."</div>
+</div>
+
+<div class="card card-qa">
+  <div class="question">Q5: What are Database Views and why did you create <span class="code-inline">v_open_internships</span>?</div>
+  <div class="answer"><strong>Model Answer:</strong> "A view is a stored virtual table based on a SELECT query. <span class="code-inline">v_open_internships</span> pre-joins the <span class="code-inline">internship</span> and <span class="code-inline">company</span> tables filtering by <span class="code-inline">status = 'Open'</span>. This abstracts complex multi-table JOINs, provides security by hiding sensitive columns, and boosts query speed for student searches."</div>
+</div>
+
+<div class="card card-qa">
+  <div class="question">Q6: How do you prevent SQL Injection attacks?</div>
+  <div class="answer"><strong>Model Answer:</strong> "We use PHP Data Objects (PDO) with prepared statements and parameter binding exclusively. User input is never concatenated directly into SQL query strings; the database engine parses the SQL syntax first, treating inputs strictly as literal values."</div>
+</div>
+
+<div class="card card-qa">
+  <div class="question">Q7: How are user passwords secured?</div>
+  <div class="answer"><strong>Model Answer:</strong> "Passwords are never saved in plain text. We utilize bcrypt hashing via PHP's native <span class="code-inline">password_hash()</span> with an adaptive work factor. During authentication, <span class="code-inline">password_verify()</span> securely verifies hashes without exposing cleartext credentials."</div>
+</div>
+
+<div class="card card-qa">
+  <div class="question">Q8: How did you prevent a student from applying to the same internship multiple times?</div>
+  <div class="answer"><strong>Model Answer:</strong> "We placed a compound UNIQUE constraint on the <span class="code-inline">application</span> table: <span class="code-inline">UNIQUE (student_id, internship_id)</span>. In addition, our stored procedure <span class="code-inline">sp_submit_application</span> checks for existing rows prior to insertion, guaranteeing idempotent submissions."</div>
+</div>
+
+<div class="card card-qa">
+  <div class="question">Q9: What happens if a company or student record is deleted? How is referential integrity preserved?</div>
+  <div class="answer"><strong>Model Answer:</strong> "All foreign keys have defined integrity constraints. Deletions follow transactional validation rules in our DDL so that dependent application and interview records do not become orphaned records."</div>
+</div>
+
+<div class="card card-qa">
+  <div class="question">Q10: Why did you separate <span class="code-inline">user_account</span> from <span class="code-inline">student</span>, <span class="code-inline">company</span>, and <span class="code-inline">admin</span>?</div>
+  <div class="answer"><strong>Model Answer:</strong> "This follows the Table Inheritance / Specialization pattern. Authentication details (email, password hash, role) are common to all users and reside in <span class="code-inline">user_account</span>. Specific profiles like CGPA for students or website for companies reside in their respective 1-to-1 extension tables."</div>
+</div>
+
+<div class="card card-qa">
+  <div class="question">Q11: What indexes did you create and why?</div>
+  <div class="answer"><strong>Model Answer:</strong> "In <span class="code-inline">file - 3.sql</span>, we created B-Tree secondary indexes on frequently filtered columns such as foreign keys (<span class="code-inline">company_id</span>, <span class="code-inline">student_id</span>), application status, and internship deadline dates to accelerate search queries and JOIN lookups."</div>
+</div>
+
+<div class="card card-qa">
+  <div class="question">Q12: How does your frontend (Next.js) communicate with your backend (PHP)?</div>
+  <div class="answer"><strong>Model Answer:</strong> "Next.js communicates through standard HTTP REST requests. The PHP backend serves as an API layer, authenticating incoming requests via session tokens and returning structured JSON responses."</div>
+</div>
+
+<!-- SECTION 7 -->
+<h2>7. Pre-Presentation Setup Checklist &amp; Tips</h2>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 25%;">Item</th>
+      <th style="width: 50%;">Preparation Details</th>
+      <th style="width: 25%;">Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>1. XAMPP Services</strong></td>
+      <td>Apache and MySQL must show green in XAMPP Control Panel.</td>
+      <td>[ &nbsp; ] Ready</td>
+    </tr>
+    <tr>
+      <td><strong>2. Frontend Dev Server</strong></td>
+      <td>Run <span class="code-inline">npm run dev</span> in <span class="code-inline">skillsync-frontend</span>. Verify localhost:3000 loads.</td>
+      <td>[ &nbsp; ] Ready</td>
+    </tr>
+    <tr>
+      <td><strong>3. phpMyAdmin Tab</strong></td>
+      <td>Pre-open <span class="code-inline">http://localhost/phpmyadmin</span> with <span class="code-inline">skillsync_db</span> selected.</td>
+      <td>[ &nbsp; ] Ready</td>
+    </tr>
+    <tr>
+      <td><strong>4. Test Accounts Sheet</strong></td>
+      <td>Keep credentials handy: Admin (<span class="code-inline">admin@skillsync.com</span>), Student (<span class="code-inline">rahul.sharma@example.com</span>), Company (<span class="code-inline">contact@techcorp.com</span>).</td>
+      <td>[ &nbsp; ] Ready</td>
+    </tr>
+    <tr>
+      <td><strong>5. Screen Display</strong></td>
+      <td>Set display scaling to 100% and zoom in browser slightly (Ctrl + '+') so text is clear on projectors.</td>
+      <td>[ &nbsp; ] Ready</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="footer-note">
+  SkillSync Academic Evaluation Master Guide &bull; Generated for University DBMS &amp; Web Systems Examination
+</div>
+
+</body>
+</html>

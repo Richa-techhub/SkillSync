@@ -13,6 +13,7 @@ type Internship = {
   location: string;
   duration: string;
   stipend: string;
+  min_cgpa?: string | number | null;
   start_date: string | null;
   deadline: string | null;
   status: string;
@@ -190,9 +191,14 @@ export default function InternshipListingsPage() {
                     📍 {internship.location} · {internship.duration}
                   </p>
 
-                  <p className="mt-4 text-lg font-semibold text-cyan-300">
-                    {formatStipend(internship.stipend)}
-                  </p>
+                  <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-lg font-semibold text-cyan-300">
+                      {formatStipend(internship.stipend)}
+                    </p>
+                    <span className="rounded-full bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 text-xs font-semibold text-amber-300">
+                      🎯 Cutoff: {internship.min_cgpa && Number(internship.min_cgpa) > 0 ? `&ge; ${Number(internship.min_cgpa).toFixed(2)} CGPA` : "No limit"}
+                    </span>
+                  </div>
 
                   <p className="mt-3 flex-1 text-sm leading-6 text-slate-400">
                     {internship.description}

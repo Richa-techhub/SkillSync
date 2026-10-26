@@ -32,6 +32,7 @@ try {
                 location,
                 duration,
                 stipend,
+                COALESCE(min_cgpa, 0.00) AS min_cgpa,
                 start_date,
                 deadline,
                 status
@@ -79,6 +80,17 @@ try {
             ]);
         }
 
+        $minCgpa = isset($input['min_cgpa']) && is_numeric($input['min_cgpa'])
+            ? round((float)$input['min_cgpa'], 2)
+            : 0.00;
+
+        if ($minCgpa < 0 || $minCgpa > 10) {
+            jsonResponse(400, [
+                'success' => false,
+                'message' => 'Minimum CGPA must be between 0.00 and 10.00'
+            ]);
+        }
+
         $startDate = DateTime::createFromFormat('!Y-m-d', $input['start_date']);
         $deadline = DateTime::createFromFormat('!Y-m-d', $input['deadline']);
 
@@ -95,8 +107,8 @@ try {
         $stmt = $pdo->prepare(
             "INSERT INTO internship
                 (company_id, title, description, location, duration,
-                 stipend, start_date, deadline, status)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Open')"
+                 stipend, min_cgpa, start_date, deadline, status)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Open')"
         );
 
         $stmt->execute([
@@ -106,6 +118,7 @@ try {
             trim($input['location']),
             trim($input['duration']),
             $input['stipend'],
+            $minCgpa,
             $input['start_date'],
             $input['deadline']
         ]);
