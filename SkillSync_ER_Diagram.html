@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillSync - Entity-Relationship (ER) Model & Schema Design</title>
+<style>
+  @page {
+    size: A4 landscape;
+    margin: 10mm;
+  }
+  * {
+    box-sizing: border-box;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    background: #0f172a;
+    color: #f1f5f9;
+    margin: 0;
+    padding: 30px;
+    line-height: 1.5;
+  }
+  .container {
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+  header {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border: 1px solid #334155;
+    padding: 28px 32px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  h1 {
+    font-size: 26px;
+    font-weight: 800;
+    margin: 0 0 6px 0;
+    color: #38bdf8;
+  }
+  p.subtitle {
+    margin: 0;
+    font-size: 14px;
+    color: #94a3b8;
+  }
+  .badge-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: #38bdf8;
+    padding: 5px 12px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .badge-purple {
+    background: rgba(168, 85, 247, 0.12);
+    border-color: rgba(168, 85, 247, 0.3);
+    color: #c084fc;
+  }
+  .btn-print {
+    background: #0284c7;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-print:hover {
+    background: #0369a1;
+  }
+  .card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .card h2 {
+    font-size: 18px;
+    margin: 0 0 16px 0;
+    color: #f8fafc;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .diagram-container {
+    background: #090d16;
+    border: 1px solid #1e293b;
+    border-radius: 12px;
+    padding: 20px;
+    overflow-x: auto;
+    text-align: center;
+  }
+  svg {
+    max-width: 100%;
+    height: auto;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 10px;
+  }
+  th, td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid #334155;
+  }
+  th {
+    background: #0f172a;
+    color: #38bdf8;
+    font-weight: 600;
+  }
+  tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .pk {
+    color: #fbbf24;
+    font-weight: bold;
+  }
+  .fk {
+    color: #a78bfa;
+    font-weight: bold;
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 12px;
+  }
+  .sub-card {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .sub-card h3 {
+    margin: 0 0 8px 0;
+    font-size: 15px;
+    color: #38bdf8;
+  }
+  .sub-card ul {
+    margin: 0;
+    padding-left: 18px;
+    color: #cbd5e1;
+    font-size: 12.5px;
+  }
+  .legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+    font-size: 12px;
+    color: #cbd5e1;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .legend-box {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div>
+      <h1>SkillSync — Entity-Relationship (ER) Conceptual Model</h1>
+      <p class="subtitle">Complete Conceptual & Relational Data Model with Cardinalities, Participation, and Normalization</p>
+    </div>
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <div class="badge-group">
+        <span class="badge">10 Normalized Entities</span>
+        <span class="badge badge-purple">3NF / BCNF Compliant</span>
+        <span class="badge">Academic DBMS Model</span>
+      </div>
+      <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    </div>
+  </header>
+
+  <!-- 1. VISUAL ER DIAGRAM (CHEN & RELATIONAL NOTATION) -->
+  <section class="card">
+    <h2>📐 1. Visual Entity-Relationship Diagram</h2>
+    <div class="legend">
+      <div class="legend-item"><span class="legend-box" style="background:#1e3a8a; border:1px solid #38bdf8;"></span> Strong Entity</div>
+      <div class="legend-item"><span class="legend-box" style="background:#4c1d95; border:1px solid #c084fc;"></span> Associative / Weak Entity</div>
+      <div class="legend-item"><span class="legend-box" style="background:#065f46; border:1px solid #34d399;"></span> Relationship Diamond</div>
+      <div class="legend-item"><span style="color:#fbbf24; font-weight:bold;">[PK]</span> Primary Key</div>
+      <div class="legend-item"><span style="color:#a78bfa; font-weight:bold;">[FK]</span> Foreign Key</div>
+    </div>
+
+    <div class="diagram-container">
+      <svg viewBox="0 0 1200 780" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="gradEntity" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#1e293b"/>
+            <stop offset="100%" stop-color="#0f172a"/>
+          </linearGradient>
+          <linearGradient id="gradAssoc" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#311042"/>
+            <stop offset="100%" stop-color="#190724"/>
+          </linearGradient>
+          <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8"/>
+          </marker>
+        </defs>
+
+        <!-- TOP ROW: USER_ACCOUNT & AUTH SPECS -->
+        <!-- USER_ACCOUNT -->
+        <rect x="490" y="30" width="220" height="90" rx="8" fill="url(#gradEntity)" stroke="#38bdf8" stroke-width="2"/>
+        <text x="600" y="58" fill="#38bdf8" font-size="14" font-weight="bold" text-anchor="middle">USER_ACCOUNT</text>
+        <text x="600" y="78" fill="#fbbf24" font-size="11" text-anchor="middle">🔑 user_id (PK)</text>
+        <text x="600" y="96" fill="#94a3b8" font-size="11" text-anchor="middle">email, password_hash, role, status</text>
+
+        <!-- CONNECTIONS FROM USER_ACCOUNT TO (ADMIN, STUDENT, COMPANY) -->
+        <path d="M 540 120 L 250 200" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,4"/>
+        <path d="M 600 120 L 600 200" stroke="#38bdf8" stroke-width="2"/>
+        <path d="M 660 120 L 950 200" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,4"/>
+
+        <!-- ADMIN (1:1) -->
+        <rect x="150" y="200" width="180" height="80" rx="8" fill="url(#gradEntity)" stroke="#64748b" stroke-width="1.5"/>
+        <text x="240" y="228" fill="#f8fafc" font-size="13" font-weight="bold" text-anchor="middle">ADMIN</text>
+        <text x="240" y="248" fill="#fbbf24" font-size="11" text-anchor="middle">🔑 admin_id (PK)</text>
+        <text x="240" y="266" fill="#a78bfa" font-size="11" text-anchor="middle">user_id (FK), name</text>
+        <text x="360" y="160" fill="#38bdf8" font-size="11" font-weight="bold">1 : 1 (Role)</text>
+
+        <!-- STUDENT (1:1) -->
+        <rect x="500" y="200" width="200" height="95" rx="8" fill="url(#gradEntity)" stroke="#38bdf8" stroke-width="2"/>
+        <text x="600" y="228" fill="#38bdf8" font-size="14" font-weight="bold" text-anchor="middle">STUDENT</text>
+        <text x="600" y="248" fill="#fbbf24" font-size="11" text-anchor="middle">🔑 student_id (PK)</text>
+        <text x="600" y="266" fill="#a78bfa" font-size="11" text-anchor="middle">user_id (FK), name, phone</text>
+        <text x="600" y="284" fill="#94a3b8" font-size="11" text-anchor="middle">department, year, CGPA, resume</text>
+        <text x="615" y="160" fill="#38bdf8" font-size="11" font-weight="bold">1 : 1</text>
+
+        <!-- COMPANY (1:1) -->
+        <rect x="850" y="200" width="200" height="95" rx="8" fill="url(#gradEntity)" stroke="#38bdf8" stroke-width="2"/>
+        <text x="950" y="228" fill="#38bdf8" font-size="14" font-weight="bold" text-anchor="middle">COMPANY</text>
+        <text x="950" y="248" fill="#fbbf24" font-size="11" text-anchor="middle">🔑 company_id (PK)</text>
+        <text x="950" y="266" fill="#a78bfa" font-size="11" text-anchor="middle">user_id (FK), company_name</text>
+        <text x="950" y="284" fill="#94a3b8" font-size="11" text-anchor="middle">phone, website, location, industry</text>
+        <text x="820" y="160" fill="#38bdf8" font-size="11" font-weight="bold">1 : 1</text>
+
+        <!-- STUDENT TO STUDENT_SKILL -->
+        <!-- Diamond: Has_Skill -->
+        <polygon points="340,360 380,335 420,360 380,385" fill="#065f46" stroke="#34d399" stroke-width="1.5"/>
+        <text x="380" y="364" fill="#ffffff" font-size="10" font-weight="bold" text-anchor="middle">Has</text>
+        <line x1="500" y1="270" x2="380" y2="335" stroke="#38bdf8" stroke-width="1.5"/>
+        <text x="460" y="295" fill="#38bdf8" font-size="11">1</text>
+
+        <!-- STUDENT_SKILL Associative Entity -->
+        <rect x="250" y="420" width="200" height="85" rx="8" fill="url(#gradAssoc)" stroke="#c084fc" stroke-width="2"/>
+        <text x="350" y="445" fill="#c084fc" font-size="13" font-weight="bold" text-anchor="middle">STUDENT_SKILL</text>
+        <text x="350" y="465" fill="#fbbf24" font-size="11" text-anchor="middle">🔑 (student_id, skill_id) [CPK]</text>
+        <text x="350" y="485" fill="#94a3b8" font-size="11" text-anchor="middle">proficiency_level</text>
+        <line x1="380" y1="385" x2="350" y2="420" stroke="#c084fc" stroke-width="1.5"/>
+        <text x="375" y="405" fill="#c084fc" font-size="11">N</text>
+
+        <!-- SKILL Central Entity -->
+        <rect x="490" y="420" width="200" height="85" rx="8" fill="url(#gradEntity)" stroke="#38bdf8" stroke-width="2"/>
+        <text x="590" y="448" fill="#38bdf8" font-size="14" font-weight="bold" text-anchor="middle">SKILL</text>
+        <text x="590" y="468" fill="#fbbf24" font-size="11" text-anchor="middle">🔑 skill_id (PK)</text>
+        <text x="590" y="486" fill="#94a3b8" font-size="11" text-anchor="middle">skill_name, skill_category</text>
+
+        <!-- Connection SKILL to STUDENT_SKILL -->
+        <line x1="490" y1="462" x2="450" y2="462" stroke="#c084fc" stroke-width="1.5"/>
+        <text x="465" y="455" fill="#38bdf8" font-size="11">1</text>
+
+        <!-- COMPANY TO INTERNSHIP -->
+        <!-- Diamond: Posts -->
+        <polygon points="950,330 980,310 1010,330 980,350" fill="#065f46" stroke="#34d399" stroke-width="1.5"/>
+        <text x="980" y="334" fill="#ffffff" font-size="10" font-weight="bold" text-anchor="middle">Posts</text>
+        <line x1="950" y1="295" x2="980" y2="310" stroke="#38bdf8" stroke-width="1.5"/>
+        <text x="945" y="315" fill="#38bdf8" font-size="11">1</text>
+
+        <!-- INTERNSHIP Entity -->
+        <rect x="850" y="380" width="220" height="120" rx="8" fill="url(#gradEntity)" stroke="#38bdf8" stroke-width="2"/>
+        <text x="960" y="408" fill="#38bdf8" font-size="14" font-weight="bold" text-anchor="middle">INTERNSHIP</text>
+        <text x="960" y="428" fill="#fbbf24" font-size="11" text-anchor="middle">🔑 internship_id (PK)</text>
+        <text x="960" y="446" fill="#a78bfa" font-size="11" text-anchor="middle">company_id (FK), title, desc</text>
+        <text x="960" y="464" fill="#94a3b8" font-size="11" text-anchor="middle">location, duration, stipend</text>
+        <text x="960" y="482" fill="#34d399" font-size="11" font-weight="bold" text-anchor="middle">🎯 min_cgpa, deadline, status</text>
+        <line x1="980" y1="350" x2="960" y2="380" stroke="#38bdf8" stroke-width="1.5"/>
+        <text x="975" y="370" fill="#38bdf8" font-size="11">N</text>
+
+        <!-- INTERNSHIP_SKILL Associative Entity -->
+        <rect x="710" y="420" width="120" height="85" rx="8" fill="url(#gradAssoc)" stroke="#c084fc" stroke-width="2"/>
+        <text x="770" y="445" fill="#c084fc" font-size="12" font-weight="bold" text-anchor="middle">INTERNSHIP_SKILL</text>
+        <text x="770" y="465" fill="#fbbf24" font-size="10" text-anchor="middle">🔑 (int_id, skill_id)</text>
+        <text x="770" y="485" fill="#94a3b8" font-size="10" text-anchor="middle">required_level</text>
+
+        <!-- Connections for INTERNSHIP_SKILL -->
+        <line x1="690" y1="462" x2="710" y2="462" stroke="#c084fc" stroke-width="1.5"/>
+        <text x="695" y="455" fill="#38bdf8" font-size="11">1</text>
+        <line x1="830" y1="462" x2="850" y2="462" stroke="#c084fc" stroke-width="1.5"/>
+        <text x="835" y="455" fill="#38bdf8" font-size="11">N</text>
+
+        <!-- APPLICATION Associative / Transaction Entity -->
+        <!-- Diamond: Applies_For -->
+        <polygon points="700,560 740,535 780,560 740,585" fill="#065f46" stroke="#34d399" stroke-width="1.5"/>
+        <text x="740" y="564" fill="#ffffff" font-size="10" font-weight="bold" text-anchor="middle">Applies</text>
+
+        <rect x="630" y="620" width="220" height="110" rx="8" fill="url(#gradAssoc)" stroke="#38bdf8" stroke-width="2"/>
+        <text x="740" y="648" fill="#38bdf8" font-size="14" font-weight="bold" text-anchor="middle">APPLICATION</text>
+        <text x="740" y="668" fill="#fbbf24" font-size="11" text-anchor="middle">🔑 application_id (PK)</text>
+        <text x="740" y="686" fill="#a78bfa" font-size="11" text-anchor="middle">student_id (FK), internship_id (FK)</text>
+        <text x="740" y="704" fill="#94a3b8" font-size="11" text-anchor="middle">application_date, status, resume, cover</text>
+        <text x="740" y="720" fill="#f43f5e" font-size="10" text-anchor="middle">UNIQUE (student_id, internship_id)</text>
+
+        <!-- Connector lines to APPLICATION -->
+        <path d="M 600 295 L 600 560 L 700 560" stroke="#38bdf8" stroke-width="1.5"/>
+        <text x="610" y="325" fill="#38bdf8" font-size="11">1</text>
+
+        <path d="M 960 500 L 960 560 L 780 560" stroke="#38bdf8" stroke-width="1.5"/>
+        <text x="965" y="525" fill="#38bdf8" font-size="11">1</text>
+
+        <line x1="740" y1="585" x2="740" y2="620" stroke="#38bdf8" stroke-width="1.5"/>
+        <text x="750" y="605" fill="#38bdf8" font-size="11">N</text>
+
+        <!-- INTERVIEW Entity -->
+        <rect x="250" y="630" width="200" height="90" rx="8" fill="url(#gradEntity)" stroke="#64748b" stroke-width="1.5"/>
+        <text x="350" y="658" fill="#f8fafc" font-size="13" font-weight="bold" text-anchor="middle">INTERVIEW</text>
+        <text x="350" y="678" fill="#fbbf24" font-size="11" text-anchor="middle">🔑 interview_id (PK)</text>
+        <text x="350" y="696" fill="#a78bfa" font-size="11" text-anchor="middle">application_id (FK, UNIQUE)</text>
+        <text x="350" y="712" fill="#94a3b8" font-size="10" text-anchor="middle">date, time, mode, result, remarks</text>
+
+        <!-- Diamond: Schedules -->
+        <polygon points="500,675 530,655 560,675 530,695" fill="#065f46" stroke="#34d399" stroke-width="1.5"/>
+        <text x="530" y="679" fill="#ffffff" font-size="9" font-weight="bold" text-anchor="middle">Has</text>
+
+        <line x1="630" y1="675" x2="560" y2="675" stroke="#38bdf8" stroke-width="1.5"/>
+        <text x="590" y="668" fill="#38bdf8" font-size="11">1</text>
+        <line x1="500" y1="675" x2="450" y2="675" stroke="#38bdf8" stroke-width="1.5"/>
+        <text x="470" y="668" fill="#38bdf8" font-size="11">0..1</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 2. ENTITIES, ATTRIBUTES & CARDINALITY BREAKDOWN -->
+  <section class="card">
+    <h2>📋 2. Comprehensive Entity and Relationship Dictionary</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Entity Name</th>
+          <th>Type</th>
+          <th>Primary Key</th>
+          <th>Foreign Keys &amp; Constraints</th>
+          <th>Key Attributes</th>
+          <th>Cardinality Relationships</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>USER_ACCOUNT</strong></td>
+          <td>Strong (Parent)</td>
+          <td><span class="pk">user_id</span></td>
+          <td>email UNIQUE, role CHECK</td>
+          <td>email, password_hash, role, account_status, created_at</td>
+          <td>1:1 with STUDENT, 1:1 with COMPANY, 1:1 with ADMIN</td>
+        </tr>
+        <tr>
+          <td><strong>STUDENT</strong></td>
+          <td>Strong (Subtype)</td>
+          <td><span class="pk">student_id</span></td>
+          <td><span class="fk">user_id</span> (FK, UNIQUE)</td>
+          <td>name, phone, department, year, CGPA, resume</td>
+          <td>1:N with APPLICATION, 1:N with STUDENT_SKILL</td>
+        </tr>
+        <tr>
+          <td><strong>COMPANY</strong></td>
+          <td>Strong (Subtype)</td>
+          <td><span class="pk">company_id</span></td>
+          <td><span class="fk">user_id</span> (FK, UNIQUE)</td>
+          <td>company_name, phone, website, location, industry</td>
+          <td>1:N with INTERNSHIP</td>
+        </tr>
+        <tr>
+          <td><strong>ADMIN</strong></td>
+          <td>Strong (Subtype)</td>
+          <td><span class="pk">admin_id</span></td>
+          <td><span class="fk">user_id</span> (FK, UNIQUE)</td>
+          <td>name</td>
+          <td>Administrative governance over all entities</td>
+        </tr>
+        <tr>
+          <td><strong>SKILL</strong></td>
+          <td>Strong</td>
+          <td><span class="pk">skill_id</span></td>
+          <td>skill_name UNIQUE</td>
+          <td>skill_name, skill_category</td>
+          <td>1:N with STUDENT_SKILL, 1:N with INTERNSHIP_SKILL</td>
+        </tr>
+        <tr>
+          <td><strong>INTERNSHIP</strong></td>
+          <td>Strong / Dependent</td>
+          <td><span class="pk">internship_id</span></td>
+          <td><span class="fk">company_id</span> (FK)</td>
+          <td>title, description, location, duration, stipend, <strong>min_cgpa</strong>, start_date, deadline, status</td>
+          <td>1:N with APPLICATION, 1:N with INTERNSHIP_SKILL</td>
+        </tr>
+        <tr>
+          <td><strong>STUDENT_SKILL</strong></td>
+          <td>Associative (M:N)</td>
+          <td><span class="pk">(student_id, skill_id)</span></td>
+          <td><span class="fk">student_id</span> (FK), <span class="fk">skill_id</span> (FK)</td>
+          <td>proficiency_level (Beginner/Intermediate/Advanced)</td>
+          <td>Resolves M:N Student ↔ Skill</td>
+        </tr>
+        <tr>
+          <td><strong>INTERNSHIP_SKILL</strong></td>
+          <td>Associative (M:N)</td>
+          <td><span class="pk">(internship_id, skill_id)</span></td>
+          <td><span class="fk">internship_id</span> (FK), <span class="fk">skill_id</span> (FK)</td>
+          <td>required_level</td>
+          <td>Resolves M:N Internship ↔ Skill</td>
+        </tr>
+        <tr>
+          <td><strong>APPLICATION</strong></td>
+          <td>Associative / Weak</td>
+          <td><span class="pk">application_id</span></td>
+          <td><span class="fk">student_id</span> (FK), <span class="fk">internship_id</span> (FK), UNIQUE(student_id, internship_id)</td>
+          <td>application_date, status, resume, cover_letter</td>
+          <td>1:N with Student &amp; Internship, 1:0..1 with Interview</td>
+        </tr>
+        <tr>
+          <td><strong>INTERVIEW</strong></td>
+          <td>Dependent (1:1 with Application)</td>
+          <td><span class="pk">interview_id</span></td>
+          <td><span class="fk">application_id</span> (FK, UNIQUE)</td>
+          <td>interview_date, interview_time, mode, result, remarks</td>
+          <td>Belongs to exactly one Application</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 3. ER TO RELATIONAL CONVERSION RULES -->
+  <section class="card">
+    <h2>🔄 3. ER to Relational Mapping Rules Applied</h2>
+    <div class="card-grid">
+      <div class="sub-card">
+        <h3>1. Strong Entity Sets</h3>
+        <p style="font-size: 12.5px; color:#cbd5e1;">Each strong entity set (<code>USER_ACCOUNT</code>, <code>SKILL</code>) is converted directly into a relational table with simple attributes. Key attributes become Primary Keys.</p>
+      </div>
+
+      <div class="sub-card">
+        <h3>2. 1:1 Specialization / Roles</h3>
+        <p style="font-size: 12.5px; color:#cbd5e1;"><code>STUDENT</code>, <code>COMPANY</code>, and <code>ADMIN</code> are mapped as separate tables containing <code>user_id</code> as a Foreign Key with a <strong>UNIQUE</strong> constraint, maintaining 1:1 integrity with user accounts.</p>
+      </div>
+
+      <div class="sub-card">
+        <h3>3. 1:N Relationships</h3>
+        <p style="font-size: 12.5px; color:#cbd5e1;">For <code>COMPANY (1) → INTERNSHIP (N)</code>, the Primary Key of Company (<code>company_id</code>) is placed as a Foreign Key in the <code>INTERNSHIP</code> table.</p>
+      </div>
+
+      <div class="sub-card">
+        <h3>4. M:N Relationships</h3>
+        <p style="font-size: 12.5px; color:#cbd5e1;"><code>STUDENT ↔ SKILL</code> and <code>INTERNSHIP ↔ SKILL</code> are converted into associative tables (<code>student_skill</code>, <code>internship_skill</code>) using Composite Primary Keys <code>(PK1, PK2)</code> to prevent duplicate associations.</p>
+      </div>
+
+      <div class="sub-card">
+        <h3>5. Business Rule Triggers</h3>
+        <p style="font-size: 12.5px; color:#cbd5e1;">Automated cutoff filtering (e.g. <code>min_cgpa</code>) and application deadlines are enforced via MySQL triggers (<code>trg_auto_discard_ineligible_applicant</code>, <code>trg_validate_application_deadline</code>).</p>
+      </div>
+
+      <div class="sub-card">
+        <h3>6. Normalization Proof</h3>
+        <p style="font-size: 12.5px; color:#cbd5e1;">Every attribute is atomic (<strong>1NF</strong>), partial dependencies on composite keys are removed (<strong>2NF</strong>), and all transitive dependencies are eliminated (<strong>3NF/BCNF</strong>).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. PARTICIPATION & CONSTRAINTS -->
+  <section class="card">
+    <h2>🔒 4. Structural Integrity &amp; Participation Constraints</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Relationship</th>
+          <th>Participating Entities</th>
+          <th>Cardinality Ratio</th>
+          <th>Participation (Student Side)</th>
+          <th>Participation (Other Side)</th>
+          <th>Integrity Constraint Enforced</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Has_Account</strong></td>
+          <td>STUDENT ↔ USER_ACCOUNT</td>
+          <td>1 : 1</td>
+          <td>Total (Every student must have an account)</td>
+          <td>Partial (Account can be company/admin)</td>
+          <td>FOREIGN KEY (user_id) REFERENCES user_account(user_id) UNIQUE</td>
+        </tr>
+        <tr>
+          <td><strong>Posts</strong></td>
+          <td>COMPANY ↔ INTERNSHIP</td>
+          <td>1 : N</td>
+          <td>Partial (Company may post 0 or N listings)</td>
+          <td>Total (Internship must belong to a company)</td>
+          <td>FOREIGN KEY (company_id) REFERENCES company(company_id) NOT NULL</td>
+        </tr>
+        <tr>
+          <td><strong>Applies_For</strong></td>
+          <td>STUDENT ↔ INTERNSHIP</td>
+          <td>M : N (via APPLICATION)</td>
+          <td>Partial (Student may have 0 or N apps)</td>
+          <td>Partial (Internship may receive 0 or N apps)</td>
+          <td>UNIQUE (student_id, internship_id), ON DELETE CASCADE / RESTRICT</td>
+        </tr>
+        <tr>
+          <td><strong>Acquires</strong></td>
+          <td>STUDENT ↔ SKILL</td>
+          <td>M : N (via STUDENT_SKILL)</td>
+          <td>Partial (Student may have 0 or N skills)</td>
+          <td>Partial (Skill may belong to 0 or N students)</td>
+          <td>PRIMARY KEY (student_id, skill_id)</td>
+        </tr>
+        <tr>
+          <td><strong>Demands</strong></td>
+          <td>INTERNSHIP ↔ SKILL</td>
+          <td>M : N (via INTERNSHIP_SKILL)</td>
+          <td>Partial (Internship may have 0 or N skills)</td>
+          <td>Partial (Skill may be required by 0 or N jobs)</td>
+          <td>PRIMARY KEY (internship_id, skill_id)</td>
+        </tr>
+        <tr>
+          <td><strong>Schedules</strong></td>
+          <td>APPLICATION ↔ INTERVIEW</td>
+          <td>1 : 0..1</td>
+          <td>Partial (Not all applicants are interviewed)</td>
+          <td>Total (Interview must belong to an application)</td>
+          <td>FOREIGN KEY (application_id) REFERENCES application(application_id) UNIQUE</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</div>
+
+</body>
+</html>
